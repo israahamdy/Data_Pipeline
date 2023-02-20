@@ -13,12 +13,14 @@ class DataQualityOperator(BaseOperator):
                  redshift_conn_id="",
                  aws_credentials_id="",
                  tables=[],
+                 checks=[],
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
         self.aws_credentials_id=aws_credentials_id
         self.tables=tables
+        self.checks=checks
 
     def execute(self, context):
         aws_hook = AwsHook(self.aws_credentials_id)
@@ -34,3 +36,11 @@ class DataQualityOperator(BaseOperator):
             
             
             self.log.info(f"Data quality on table {table} check passed with {records[0][0]} records")
+
+        
+        for i, check in enumerate(self.checks):
+            records = redshift.get_records(check['test_sql'])
+            if not check['expected_result'] == records[0][0]:
+                raise ValueError(f"Data quality check #{i} failed. the table contains nulls in thier primary key ")
+            
+            self.log.info(f"Data quality check #{i} passed. the table contains 0 nulls in thier primary key")

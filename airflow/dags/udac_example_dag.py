@@ -27,6 +27,7 @@ dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='@hourly',
+          max_active_runs = 1
         )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -39,7 +40,8 @@ stage_events_to_redshift = StageToRedshiftOperator(
     table='staging_events',
     s3_bucket='udacity-dend',
     s3_key='log_data',
-    json='s3://udacity-dend/log_json_path.json'
+    json='s3://udacity-dend/log_json_path.json',
+    region='us-west-2'
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
@@ -50,7 +52,8 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     table='staging_songs',
     s3_bucket='udacity-dend',
     s3_key='song-data/A/A/A/',
-    json='auto'
+    json='auto',
+    region='us-west-2'
 )
 
 load_songplays_table = LoadFactOperator(
@@ -80,7 +83,14 @@ run_quality_checks = DataQualityOperator(
     dag=dag,
     redshift_conn_id='redshift',
     aws_credentials_id='aws_credentials',
-    table=['staging_events','staging_songs','songplays','artists','users','songs','time']
+    table=['staging_events','staging_songs','songplays','artists','users','songs','time'],
+    checks = [
+      {'test_sql': "SELECT COUNT(*) FROM artists WHERE artistid IS NULL", 'expected_result': 0},
+      {'test_sql': "SELECT COUNT(*) FROM songs WHERE songid IS NULL", 'expected_result': 0},
+      {'test_sql': "SELECT COUNT(*) FROM users WHERE userid IS NULL", 'expected_result': 0},
+      {'test_sql': "SELECT COUNT(*) FROM time WHERE start_time IS NULL", 'expected_result': 0}
+    ]
+
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
