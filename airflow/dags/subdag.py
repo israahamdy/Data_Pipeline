@@ -20,13 +20,13 @@ def LoadDimension_dag(
     )
 
     load_user_dimension_table = LoadDimensionOperator(
-    task_id='Load_user_dim_table',
-    dag=dag,
-    redshift_conn_id='redshift',
-    aws_credentials_id='aws_credentials',
-    table='users',
-    SQL_statement = SqlQueries.user_table_insert,
-    append_only=True
+        task_id='Load_user_dim_table',
+        dag=dag,
+        redshift_conn_id='redshift',
+        aws_credentials_id='aws_credentials',
+        table='users',
+        SQL_statement = SqlQueries.user_table_insert,
+        append_only=True
     )
 
     load_song_dimension_table = LoadDimensionOperator(

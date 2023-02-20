@@ -27,7 +27,6 @@ dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='@hourly',
-          #start_date= datetime(2019, 1, 12)
         )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -70,6 +69,7 @@ Dims_subdag_task = SubDagOperator(
         Dims_task_id,
         "redshift",
         "aws_credentials",
+        start_date= datetime(2019, 1, 12),
     ),
     task_id=Dims_task_id,
     dag=dag,
