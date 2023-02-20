@@ -83,12 +83,15 @@ run_quality_checks = DataQualityOperator(
     dag=dag,
     redshift_conn_id='redshift',
     aws_credentials_id='aws_credentials',
-    table=['staging_events','staging_songs','songplays','artists','users','songs','time'],
     checks = [
-      {'test_sql': "SELECT COUNT(*) FROM artists WHERE artistid IS NULL", 'expected_result': 0},
-      {'test_sql': "SELECT COUNT(*) FROM songs WHERE songid IS NULL", 'expected_result': 0},
-      {'test_sql': "SELECT COUNT(*) FROM users WHERE userid IS NULL", 'expected_result': 0},
-      {'test_sql': "SELECT COUNT(*) FROM time WHERE start_time IS NULL", 'expected_result': 0}
+      {'test_sql': "SELECT COUNT(*) FROM artists", 'expected_result': 0}, 
+      {'test_sql': "SELECT COUNT(*) FROM songs", 'expected_result': 0},  
+      {'test_sql': "SELECT COUNT(*) FROM users", 'expected_result': 0},  
+      {'test_sql': "SELECT COUNT(*) FROM time", 'expected_result': 0},  
+      {'test_sql': "SELECT COUNT(*) FROM artists WHERE artistid IS NOT NULL", 'expected_result': 0},
+      {'test_sql': "SELECT COUNT(*) FROM songs WHERE songid IS NOT NULL", 'expected_result': 0},
+      {'test_sql': "SELECT COUNT(*) FROM users WHERE userid IS NOT NULL", 'expected_result': 0},
+      {'test_sql': "SELECT COUNT(*) FROM time WHERE start_time IS NOT NULL", 'expected_result': 0}
     ]
 
 )
