@@ -21,15 +21,19 @@ The project contains three major components:
 - A helper class for the SQL transformations
 
 ### Project Operators:
-1- Stage Operator
+ 1- Stage Operator
+
 The stage operator to load any JSON formatted files from S3 to Amazon Redshift. The operator creates and runs a SQL COPY statement based on the parameters provided. The operator's parameters should specify where in S3 the file is loaded and what is the target table.
 The parameters used to distinguish between JSON file. Also allows to load timestamped files from S3 based on the execution time and run backfills.
 
-2- Fact Operator
+ 2- Fact Operator
+
 Fact tables are usually so massive they only allow append type functionality. Most of the logic is within the SQL transformations and the operator is take as input a SQL statement and target database on which to run the query against.
 
-3-Dimension Operators
+ 3- Dimension Operators
+
 Dimension loads are done with the truncate-insert pattern where the target table is emptied before the load. Also have a parameter that allows switching between insert modes when loading dimensions. Most of the logic is within the SQL transformations and the operator is take as input a SQL statement and target database on which to run the query against. 
  
-4- Data Quality Operator
+ 4- Data Quality Operator
+
 The data quality operator is used to run checks on the data itself. The operator's main functionality is to receive one or more SQL based test cases along with the expected results and execute the tests. For each the test, the test result and expected result needs to be checked and if there is no match, the operator raise an exception and the task retry and fail eventually.
